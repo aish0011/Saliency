@@ -1,0 +1,75 @@
+<project default="compile">
+
+    <target name="clean">
+        <delete dir="build"/>
+	<delete>
+		<fileset dir="." includes="TEST-*.txt"/>
+	</delete>
+	<delete>
+		<fileset dir="." includes="*out*.bmp"/>
+	</delete>
+    </target>
+
+
+    <target name="compile">
+        <mkdir dir="build/classes"/>
+	<javac includeantruntime="false" srcdir="src/java" destdir="build/classes" debug="on" debuglevel="lines,vars,source" >
+		<classpath>
+			<fileset dir="/usr/share/java">
+				<include name="*.jar"/>
+			</fileset>
+		</classpath>
+	</javac>
+    </target>
+
+    <target name="jar" depends="compile">
+        <mkdir dir="build/jar"/>
+        <jar destfile="build/jar/PyramidFilter.jar" basedir="build/classes">
+            <manifest>
+                <attribute name="Main-Class" value="sg.edu.ntu.sce.PyramidFilter"/>
+            </manifest>
+        </jar>
+        <jar destfile="build/jar/CenterSurround.jar" basedir="build/classes">
+            <manifest>
+                <attribute name="Main-Class" value="sg.edu.ntu.sce.CenterSurround"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="run" depends="jar">
+	    <java jar="build/jar/PyramidFilter.jar" fork="true">
+		    <jvmarg value="-Xmx1024m"/>
+		    <arg value="donald_duck_in.bmp"/>
+		    <arg value="donald_duck_pyramid"/>
+		    <arg value="5"/>
+		    <arg value="0"/>
+	    </java>
+	    <java jar="build/jar/CenterSurround.jar" fork="true">
+		    <jvmarg value="-Xmx1024m"/>
+		    <arg value="donald_duck_pyramid_0_in.bmp"/>
+		    <arg value="donald_duck_pyramid_3_out.bmp"/>
+		    <arg value="donald_duck_centersurround_0_out.bmp"/>
+	    </java>
+	    <java jar="build/jar/CenterSurround.jar" fork="true">
+		    <jvmarg value="-Xmx1024m"/>
+		    <arg value="donald_duck_pyramid_0_in.bmp"/>
+		    <arg value="donald_duck_pyramid_1_in.bmp"/>
+		    <arg value="donald_duck_centersurround_1_out.bmp"/>
+	    </java>
+    </target>
+
+    <target name="junit" depends="jar">
+	    <junit fork="true" haltonfailure="no" printsummary="true">
+		    <classpath>
+			    <pathelement location="build/classes"/>
+			    <fileset dir="/usr/share/java">
+				    <include name="*.jar"/>
+			    </fileset>
+		    </classpath>
+		    <formatter type="plain"/>
+		    <test name="sg.edu.ntu.sce.Lab9JUnit"/>
+		    <jvmarg value="-Xmx1024m"/>
+	    </junit>
+    </target>
+
+</project>
